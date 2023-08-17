@@ -81,10 +81,6 @@ Once Python is installed, follow these steps:
      ![Alt text](images/image-5.png)<br>
      _Example of `.txt` file._
 
-## Customizations and Settings ⚙
-
-[Provide any customization or settings if your app has any]
-
 ## Feedback and Contributions 📧
 
 Feedback, bug reports, and pull requests are welcome.
