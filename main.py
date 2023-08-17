@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QAction,
     QFileDialog,
     QAbstractItemView,
-    QTextEdit,
+    QShortcut,
     QPushButton,
     QDialog,
     QHBoxLayout,
@@ -122,6 +122,12 @@ class MainWindow(QMainWindow):
         self.about_action.triggered.connect(self.show_about)
         menubar.addAction(self.about_action)
 
+        self.copy_shortcut = QShortcut(QKeySequence("Ctrl+C"), self)
+        self.copy_shortcut.activated.connect(self.copy_to_clipboard)
+
+        self.paste_shortcut = QShortcut(QKeySequence("Ctrl+V"), self)
+        self.paste_shortcut.activated.connect(self.paste_from_clipboard)
+
     def show_about(self):
         about_window = QDialog(self)
         about_window.setWindowTitle("About")
@@ -186,6 +192,34 @@ class MainWindow(QMainWindow):
         )
         if reply == QMessageBox.Yes:
             self.table_widget.setRowCount(0)
+
+    def contextMenuEvent(self, event):
+        context_menu = QMenu(self)
+        copy_action = QAction("Copy", self)
+        copy_action.triggered.connect(self.copy_to_clipboard)
+        context_menu.addAction(copy_action)
+
+        paste_action = QAction("Paste", self)
+        paste_action.triggered.connect(self.paste_from_clipboard)
+        context_menu.addAction(paste_action)
+
+        context_menu.exec_(event.globalPos())
+
+    def copy_to_clipboard(self):
+        selected_items = self.table_widget.selectedItems()
+        if selected_items:
+            text = selected_items[0].text()
+            clipboard = QApplication.clipboard()
+            clipboard.setText(text)
+
+    def paste_from_clipboard(self):
+        clipboard = QApplication.clipboard()
+        text = clipboard.text().strip()
+        if text:
+            row = self.table_widget.rowCount()
+            self.table_widget.insertRow(row)
+            self.table_widget.setItem(row, 0, QTableWidgetItem(text))
+            self.table_widget.setItem(row, 1, QTableWidgetItem(""))
 
     """ def open_file(self):
         options = QFileDialog.Options()
